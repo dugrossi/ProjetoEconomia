@@ -3,7 +3,8 @@
 import pandas as pd
 
 from analise.analisador_dados import AnalisadorDados
-from config import PASTA_DADOS_BRUTOS, SERIES
+from analise.tratador_dados import TratadorDados
+from config import PASTA_DADOS_BRUTOS, PERIODOS, SERIES
 from dashboard.dashboard_html import DashboardHTML
 from fontes.fonte_api_bcb import FonteAPIBCB
 from fontes.fonte_com_reserva import FonteComReserva
@@ -82,12 +83,40 @@ def main() -> None:
     for serie in series:
         print(f"{serie} - {len(serie)} registros")
 
+    # Etapa 4: tratamento antes da análise
+    tratador = TratadorDados(metodo_ausentes="interpolar")
+    series = [tratador.tratar(serie) for serie in series]
+    mostrar("Tratamento dos dados", tratador.relatorio)
+
     analisador = AnalisadorDados(series)
     mostrar("Qualidade dos dados", analisador.verificar_qualidade())
     mostrar(
         "Estatísticas descritivas",
         analisador.estatisticas_descritivas().round(2),
     )
+    mostrar(
+        "Inadimplência por período",
+        analisador.estatisticas_por_periodo(INADIMPLENCIA, PERIODOS).round(2),
+    )
+    mostrar(
+        "Correlação com juros de 6 meses antes, por período",
+        analisador.correlacao_por_periodo(JUROS, INADIMPLENCIA, 6, PERIODOS)
+        .round(2).to_frame(),
+    )
+    mostrar(
+        "Inadimplência por ano (do maior para o menor)",
+        analisador.ranking_anos(INADIMPLENCIA).round(2),
+    )
+    mostrar(
+        "Meses por faixa de inadimplência",
+        analisador.agrupar_por_faixa(INADIMPLENCIA).round({"percentual": 1}),
+    )
+    mostrar(
+        "Os 10 meses de maior inadimplência",
+        analisador.ranking_meses(INADIMPLENCIA, 10),
+    )
+    acima = analisador.meses_acima_de(INADIMPLENCIA, 4.0)
+    print(f"\nMeses com inadimplência acima de 4%: {len(acima)}")
 
     indicadores = criar_indicadores()
     resultados = analisador.calcular_indicadores(indicadores)

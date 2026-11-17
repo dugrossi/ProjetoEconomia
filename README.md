@@ -26,7 +26,7 @@ ProjetoEconomia/
 ├── config.py          caminhos e séries usadas
 ├── fontes/            de onde vêm os dados (CSV, API, CSV com reserva na API)
 ├── modelos/           SerieTemporal e exceções do projeto
-├── analise/           AnalisadorDados
+├── analise/           TratadorDados e AnalisadorDados
 ├── indicadores/       Indicador (abstrata) e os indicadores do dashboard
 ├── visualizacao/      Visualizador (gráficos Plotly)
 ├── dashboard/         Slide e DashboardHTML (apresentação em slides)
@@ -62,11 +62,22 @@ classDiagram
     -unidade
     -dados
   }
+  class TratadorDados {
+    -metodo_ausentes
+    -relatorio
+    +remover_duplicadas()
+    +completar_meses()
+    +tratar_ausentes()
+    +tratar(serie) SerieTemporal
+  }
   class AnalisadorDados {
     -series
     +verificar_qualidade()
-    +estatisticas_descritivas()
-    +tabela_unificada()
+    +filtrar_periodo()
+    +agrupar_por_ano()
+    +agrupar_por_faixa()
+    +ranking_meses()
+    +estatisticas_por_periodo()
     +correlacao_defasada()
     +calcular_indicadores(lista)
   }
@@ -122,6 +133,7 @@ classDiagram
   DashboardHTML o-- Visualizador
   DashboardHTML o-- Indicador
   DashboardHTML *-- Slide
+  SerieTemporal <.. TratadorDados : trata
 ```
 
 | Classe | Responsabilidade |
@@ -130,7 +142,8 @@ classDiagram
 | `FonteCSV`, `FonteAPIBCB` | Leem a série do CSV baixado ou da API do SGS |
 | `FonteComReserva` | Usa uma fonte principal e, se ela falhar, uma reserva |
 | `SerieTemporal` | Guarda uma série: código, nome, unidade e valores |
-| `AnalisadorDados` | Exploração, tratamento e análises com Pandas |
+| `TratadorDados` | Remove duplicadas, completa meses faltando e trata ausentes |
+| `AnalisadorDados` | Filtros, agrupamentos, rankings, estatísticas e indicadores com Pandas |
 | `Indicador` (abstrata) | Contrato de todo KPI: `calcular()` e `formatar()` |
 | `IndicadorDeSerie` | Base dos indicadores calculados sobre uma série |
 | `ValorAtual`, `Variacao12Meses`, `DistanciaDaMedia`, `PercentilHistorico` | Nível atual, variação em 12 meses e posição no histórico |
