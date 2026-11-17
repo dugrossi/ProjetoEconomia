@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from dashboard.dashboard_html import DashboardHTML
 from dashboard.slide import Slide
-from visualizacao.visualizador import TEMA_VIDRO, Visualizador
+from visualizacao.visualizador import TEMA_PADRAO, Visualizador
 
 
 class TestSlide(unittest.TestCase):
@@ -40,11 +40,10 @@ class TestDashboardHTML(unittest.TestCase):
 
 
 class TestVisualizador(unittest.TestCase):
-    def test_usa_tema_de_vidro_por_padrao(self):
+    def test_usa_tema_padrao_quando_nenhum_e_informado(self):
         visualizador = Visualizador()
 
-        self.assertIs(visualizador.tema, TEMA_VIDRO)
-        self.assertEqual(visualizador.tema["fundo"], "rgba(0,0,0,0)")
+        self.assertIs(visualizador.tema, TEMA_PADRAO)
 
 
 if __name__ == "__main__":

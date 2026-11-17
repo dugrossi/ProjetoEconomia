@@ -139,6 +139,23 @@ class TestAnalisadorEtapa4(unittest.TestCase):
 
         self.assertAlmostEqual(resultado["segunda metade"], 1.0)
 
+    def test_dados_dispersao_pareia_causa_defasada_com_efeito(self):
+        datas = pd.date_range("2023-01-01", periods=4, freq="MS")
+        analisador = AnalisadorDados([
+            criar_serie(10, datas, [1.0, 2.0, 3.0, 4.0]),
+            criar_serie(20, datas, [5.0, 6.0, 7.0, 8.0]),
+        ])
+
+        pares = analisador.dados_dispersao(
+            10, 20, 1, {"todo": ("2023-01-01", "2023-12-31")}
+        )
+
+        # fevereiro (efeito 6) usa a causa de janeiro (1)
+        self.assertEqual(len(pares), 3)
+        self.assertEqual(pares.loc[0, "x"], 1.0)
+        self.assertEqual(pares.loc[0, "y"], 6.0)
+        self.assertEqual(str(pares.loc[0, "data"].date()), "2023-02-01")
+        self.assertEqual(set(pares["grupo"]), {"todo"})
 
 if __name__ == "__main__":
     unittest.main()

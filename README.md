@@ -29,6 +29,7 @@ ProjetoEconomia/
 ├── analise/           TratadorDados e AnalisadorDados
 ├── indicadores/       Indicador (abstrata) e os indicadores do dashboard
 ├── visualizacao/      Visualizador (gráficos Plotly)
+├── saida/graficos/    gráficos gerados pelo main.py (não vão para o Git)
 ├── dashboard/         Slide e DashboardHTML (apresentação em slides)
 ├── dados/brutos/      CSVs baixados do Banco Central
 └── tests/             testes unitários (unittest)
@@ -160,6 +161,9 @@ python -m venv .venv
 pip install -r requirements.txt
 python main.py
 ```
+
+O `main.py` mostra as análises no terminal e grava os gráficos interativos
+(Plotly) em `saida/graficos/`, um arquivo HTML por gráfico.
 
 ## Testes
 

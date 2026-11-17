@@ -1,10 +1,17 @@
 """Ponto de entrada: monta os objetos do sistema e mostra os resultados."""
 
-import pandas as pd
+from pathlib import Path
 
-from analise.analisador_dados import AnalisadorDados
+import pandas as pd
+import plotly.graph_objects as go
+
+from analise.analisador_dados import (
+    LIMITES_FAIXAS,
+    NOMES_FAIXAS,
+    AnalisadorDados,
+)
 from analise.tratador_dados import TratadorDados
-from config import PASTA_DADOS_BRUTOS, PERIODOS, SERIES
+from config import PASTA_DADOS_BRUTOS, PASTA_GRAFICOS, PERIODOS, SERIES
 from dashboard.dashboard_html import DashboardHTML
 from fontes.fonte_api_bcb import FonteAPIBCB
 from fontes.fonte_com_reserva import FonteComReserva
@@ -66,6 +73,75 @@ def criar_indicadores() -> list[Indicador]:
     ]
 
 
+def descricoes_faixas() -> dict[str, str]:
+    """Texto com os limites de cada faixa, para as dicas do treemap."""
+    textos = {}
+    for nome, inferior, superior in zip(NOMES_FAIXAS, LIMITES_FAIXAS,
+                                        LIMITES_FAIXAS[1:]):
+        if inferior == 0:
+            textos[nome] = f"(abaixo de {superior:.2f}%)"
+        elif superior == float("inf"):
+            textos[nome] = f"({inferior:.2f}% ou mais)"
+        else:
+            textos[nome] = f"({inferior:.2f}% a {superior:.2f}%)"
+    return textos
+
+
+def criar_graficos(
+    analisador: AnalisadorDados, visualizador: Visualizador
+) -> dict[str, go.Figure]:
+    """Os cinco gráficos do projeto, cada um com os dados do analisador."""
+    inadimplencia = analisador.serie(INADIMPLENCIA)
+    juros = analisador.serie(JUROS)
+    anos = analisador.agrupar_por_ano(INADIMPLENCIA)
+    correlacoes = analisador.correlacao_defasada(JUROS, INADIMPLENCIA,
+                                                 range(25))
+    media = inadimplencia.dados["valor"].mean()
+    return {
+        "linhas_evolucao": visualizador.grafico_linhas(
+            analisador.tabela_unificada(),
+            "Inadimplência e taxa média de juros do crédito",
+            rotulos={INADIMPLENCIA: "Inadimplência", JUROS: "Juros"},
+            unidades={INADIMPLENCIA: inadimplencia.unidade,
+                      JUROS: juros.unidade},
+            eixo_direito=JUROS,
+        ),
+        "barras_media_anual": visualizador.grafico_barras(
+            anos["media"], "Média anual da inadimplência",
+            rotulo_x="Ano", rotulo_y=inadimplencia.unidade,
+            destaque=int(anos["media"].idxmax()),
+            linha_referencia=(
+                media, f"Média histórica: {media:.2f}%".replace(".", ",")
+            ),
+        ),
+        "barras_defasagem": visualizador.grafico_barras(
+            correlacoes,
+            "Correlação entre inadimplência e juros de N meses antes",
+            rotulo_x="Defasagem dos juros (meses)",
+            rotulo_y="Correlação de Pearson",
+            destaque=int(correlacoes.idxmax()),
+        ),
+        "treemap_faixas": visualizador.grafico_treemap(
+            analisador.agrupar_por_faixa(INADIMPLENCIA)["meses"],
+            "Meses por faixa de inadimplência",
+            descricoes=descricoes_faixas(),
+        ),
+        "dispersao_juros_inadimplencia": visualizador.grafico_dispersao(
+            analisador.dados_dispersao(JUROS, INADIMPLENCIA, 6, PERIODOS),
+            "Juros de 6 meses antes x inadimplência",
+            rotulo_x="Juros de 6 meses antes (% ao mês)",
+            rotulo_y="Inadimplência (% da carteira)",
+        ),
+    }
+
+
+def salvar_graficos(graficos: dict[str, go.Figure], pasta: Path) -> None:
+    """Grava cada gráfico como um arquivo HTML interativo."""
+    pasta.mkdir(parents=True, exist_ok=True)
+    for nome, figura in graficos.items():
+        figura.write_html(pasta / f"{nome}.html", include_plotlyjs=True)
+
+
 def mostrar(titulo: str, tabela: pd.DataFrame) -> None:
     """Imprime uma tabela com um título."""
     print(f"\n=== {titulo} ===")
@@ -122,12 +198,17 @@ def main() -> None:
     resultados = analisador.calcular_indicadores(indicadores)
     mostrar("Indicadores", resultados[["indicador", "texto"]])
 
-    # Visualizador e dashboard já fazem parte da estrutura; os gráficos
-    # e a apresentação em HTML são implementados nas Etapas 5 e 6.
+    # Etapa 5: gráficos interativos
+    visualizador = Visualizador()
+    graficos = criar_graficos(analisador, visualizador)
+    salvar_graficos(graficos, PASTA_GRAFICOS)
+    print(f"\n{len(graficos)} gráficos salvos em {PASTA_GRAFICOS}")
+
+    # A apresentação em HTML é implementada na Etapa 6.
     dashboard = DashboardHTML(
         "Inadimplência e custo do crédito no Brasil",
         analisador,
-        Visualizador(),
+        visualizador,
         indicadores,
     )
     print(f"\nDashboard criado: {dashboard.titulo}")

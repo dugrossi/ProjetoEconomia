@@ -4,6 +4,7 @@ from pathlib import Path
 
 PASTA_PROJETO = Path(__file__).parent
 PASTA_DADOS_BRUTOS = PASTA_PROJETO / "dados" / "brutos"
+PASTA_GRAFICOS = PASTA_PROJETO / "saida" / "graficos"
 
 # Períodos comparados na análise (pergunta 3 da Etapa 1)
 PERIODOS = {

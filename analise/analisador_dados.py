@@ -209,6 +209,32 @@ class AnalisadorDados:
             tabela[nome] = recorte.dados["valor"].describe()
         return pd.DataFrame(tabela).T
 
+    def dados_dispersao(
+        self,
+        codigo_causa: int,
+        codigo_efeito: int,
+        defasagem: int,
+        periodos: dict[str, tuple[str, str]] | None = None,
+    ) -> pd.DataFrame:
+        """Pares (causa N meses antes, efeito no mês) para a dispersão.
+
+        Devolve as colunas "data" (mês do efeito), "x" (causa
+        defasada), "y" (efeito) e, se houver períodos, "grupo".
+        """
+        tabela = self.tabela_unificada()
+        pares = pd.DataFrame({
+            "x": tabela[codigo_causa].shift(defasagem),
+            "y": tabela[codigo_efeito],
+        }).dropna()
+        pares = pares.rename_axis("data").reset_index()
+        if periodos:
+            pares["grupo"] = None
+            for nome, (inicio, fim) in periodos.items():
+                no_periodo = pares["data"].between(pd.Timestamp(inicio),
+                                                   pd.Timestamp(fim))
+                pares.loc[no_periodo, "grupo"] = nome
+        return pares
+
     def correlacao_por_periodo(
         self,
         codigo_causa: int,
