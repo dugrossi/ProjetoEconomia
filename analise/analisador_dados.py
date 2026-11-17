@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
+
 import pandas as pd
 
 from modelos.serie_temporal import SerieTemporal
+
+if TYPE_CHECKING:
+    from indicadores.indicador import Indicador
 
 
 class AnalisadorDados:
     """Reúne as séries do projeto e oferece as análises sobre elas.
 
-    Nesta etapa (Etapa 2) concentra a exploração inicial: tipos das
-    variáveis, qualidade dos dados e estatísticas descritivas.
+    Concentra a exploração (tipos, qualidade, estatísticas), as
+    análises entre séries e o cálculo dos indicadores.
     """
 
     def __init__(self, series: list[SerieTemporal]) -> None:
@@ -115,3 +121,36 @@ class AnalisadorDados:
     def correlacao(self) -> pd.DataFrame:
         """Correlação de Pearson entre as séries, no mesmo mês."""
         return self.tabela_unificada().corr()
+
+    def correlacao_defasada(
+        self, codigo_causa: int, codigo_efeito: int, defasagens: Iterable[int]
+    ) -> pd.Series:
+        """Correlação entre o efeito de cada mês e a causa N meses antes.
+
+        Devolve uma série com a defasagem N no índice e a correlação
+        de Pearson como valor.
+        """
+        tabela = self.tabela_unificada()
+        causa = tabela[codigo_causa]
+        efeito = tabela[codigo_efeito]
+        correlacoes = {n: efeito.corr(causa.shift(n)) for n in defasagens}
+        return pd.Series(correlacoes, name="correlacao")
+
+    def calcular_indicadores(
+        self, indicadores: list[Indicador]
+    ) -> pd.DataFrame:
+        """Calcula uma lista de indicadores, de qualquer tipo.
+
+        Cada indicador sabe se calcular (polimorfismo): o analisador só
+        chama ``calcular()`` e ``formatar()`` em cada um.
+        """
+        linhas = []
+        for indicador in indicadores:
+            valor = indicador.calcular(self)
+            linhas.append({
+                "indicador": indicador.nome,
+                "valor": valor,
+                "texto": indicador.formatar(valor),
+                "descricao": indicador.descricao,
+            })
+        return pd.DataFrame(linhas)
