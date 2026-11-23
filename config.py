@@ -5,6 +5,11 @@ from pathlib import Path
 PASTA_PROJETO = Path(__file__).parent
 PASTA_DADOS_BRUTOS = PASTA_PROJETO / "dados" / "brutos"
 PASTA_GRAFICOS = PASTA_PROJETO / "saida" / "graficos"
+ARQUIVO_DASHBOARD = PASTA_PROJETO / "saida" / "dashboard.html"
+
+# Códigos das séries usadas em todo o projeto
+INADIMPLENCIA = 21082
+JUROS = 25433
 
 # Períodos comparados na análise (pergunta 3 da Etapa 1)
 PERIODOS = {

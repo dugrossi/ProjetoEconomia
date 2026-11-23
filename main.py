@@ -11,7 +11,15 @@ from analise.analisador_dados import (
     AnalisadorDados,
 )
 from analise.tratador_dados import TratadorDados
-from config import PASTA_DADOS_BRUTOS, PASTA_GRAFICOS, PERIODOS, SERIES
+from config import (
+    ARQUIVO_DASHBOARD,
+    INADIMPLENCIA,
+    JUROS,
+    PASTA_DADOS_BRUTOS,
+    PASTA_GRAFICOS,
+    PERIODOS,
+    SERIES,
+)
 from dashboard.dashboard_html import DashboardHTML
 from fontes.fonte_api_bcb import FonteAPIBCB
 from fontes.fonte_com_reserva import FonteComReserva
@@ -27,10 +35,7 @@ from indicadores.indicadores_serie import (
 )
 from modelos.excecoes import FonteDadosError
 from modelos.serie_temporal import SerieTemporal
-from visualizacao.visualizador import Visualizador
-
-INADIMPLENCIA = 21082
-JUROS = 25433
+from visualizacao.visualizador import TEMA_EDITORIAL, Visualizador
 
 
 def carregar_series(fonte: FonteDados) -> list[SerieTemporal]:
@@ -199,19 +204,21 @@ def main() -> None:
     mostrar("Indicadores", resultados[["indicador", "texto"]])
 
     # Etapa 5: gráficos interativos
-    visualizador = Visualizador()
+    visualizador = Visualizador(TEMA_EDITORIAL)
     graficos = criar_graficos(analisador, visualizador)
     salvar_graficos(graficos, PASTA_GRAFICOS)
     print(f"\n{len(graficos)} gráficos salvos em {PASTA_GRAFICOS}")
 
-    # A apresentação em HTML é implementada na Etapa 6.
+    # Etapa 6: apresentação em HTML com os gráficos, KPIs e tabela
     dashboard = DashboardHTML(
         "Inadimplência e custo do crédito no Brasil",
         analisador,
         visualizador,
         indicadores,
     )
-    print(f"\nDashboard criado: {dashboard.titulo}")
+    dashboard.montar_slides(graficos)
+    arquivo = dashboard.gerar(ARQUIVO_DASHBOARD)
+    print(f"\nDashboard com {len(dashboard)} slides salvo em {arquivo}")
 
 
 if __name__ == "__main__":

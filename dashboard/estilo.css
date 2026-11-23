@@ -1,0 +1,90 @@
+/* Estilo da apresentação: fundo cor de papel, títulos com serifa,
+   texto à esquerda e conteúdo (gráfico, cards ou tabela) à direita. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: #f3efe7; color: #1c1917;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+/* ---------- slides ---------- */
+.slide { position: absolute; inset: 0; display: none; padding: 64px 9% 56px; gap: 56px; align-items: stretch; }
+.slide.ativo { display: flex; }
+
+.texto { width: 34%; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; }
+.num-slide { font-size: 13px; color: #a8a29e; letter-spacing: .12em; }
+h2 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-size: 44px; line-height: 1.08; margin-top: 14px; }
+.grande { font-family: 'DM Serif Display', Georgia, serif; font-size: 96px; line-height: 1; margin-top: 26px; color: #1d4e89; }
+.grande small { font-size: 32px; }
+.texto p { font-size: 16px; line-height: 1.6; color: #57534e; margin-top: 18px; }
+.texto p b { color: #1c1917; font-weight: 600; }
+
+.conteudo { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.grafico { flex: 1; min-height: 0; }
+.grafico > div { width: 100%; height: 100%; }
+
+/* ---------- capa ---------- */
+.perguntas { list-style: none; counter-reset: pergunta; }
+.perguntas li { counter-increment: pergunta; display: flex; gap: 22px; padding: 26px 0; border-bottom: 1px solid rgba(0,0,0,.1); font-size: 20px; line-height: 1.45; }
+.perguntas li:first-child { border-top: 1px solid rgba(0,0,0,.1); }
+.perguntas li::before { content: counter(pergunta, decimal-leading-zero); font-family: 'DM Serif Display', Georgia, serif; font-size: 34px; color: #1d4e89; line-height: 1; }
+.rotulo { font-size: 13px; color: #a8a29e; letter-spacing: .12em; margin-bottom: 18px; }
+
+/* ---------- cards de indicadores ---------- */
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.kpi { background: rgba(255,255,255,.55); border: 1px solid rgba(0,0,0,.07); border-radius: 14px; padding: 24px 22px; }
+.kpi .nome { font-size: 13px; color: #78716c; text-transform: uppercase; letter-spacing: .06em; }
+.kpi .valor { font-family: 'DM Serif Display', Georgia, serif; font-size: 44px; line-height: 1.1; margin-top: 10px; color: #1c1917; }
+.kpi .descricao { font-size: 13px; color: #78716c; margin-top: 8px; line-height: 1.45; }
+.kpi .valor small { font-family: 'Inter', Arial, sans-serif; font-size: 15px; color: #78716c; }
+.kpi.principal .valor { color: #1d4e89; }
+
+/* ---------- tabela com filtros ---------- */
+.filtros { display: flex; gap: 14px; align-items: end; margin-bottom: 14px; flex-wrap: wrap; }
+.filtros label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #78716c; text-transform: uppercase; letter-spacing: .06em; }
+.filtros select { font: 15px 'Inter', Arial, sans-serif; padding: 8px 12px; border: 1px solid rgba(0,0,0,.15); border-radius: 8px; background: #fffdf8; color: #1c1917; }
+.filtros .total { margin-left: auto; font-size: 14px; color: #57534e; }
+.tabela-caixa { flex: 1; min-height: 0; overflow-y: auto; background: rgba(255,255,255,.55); border: 1px solid rgba(0,0,0,.07); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th { position: sticky; top: 0; background: #ebe4d6; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: #57534e; padding: 12px 18px; }
+td { padding: 9px 18px; border-top: 1px solid rgba(0,0,0,.06); }
+.faixa { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; }
+
+/* ---------- arquitetura ---------- */
+.fluxo { display: flex; flex-direction: column; gap: 22px; }
+.classe { position: relative; background: rgba(255,255,255,.55); border: 1px solid rgba(0,0,0,.07); border-left: 4px solid #1d4e89; border-radius: 10px; padding: 12px 18px; }
+.classe:not(:last-child)::after { content: '↓'; position: absolute; left: 22px; bottom: -22px; font-size: 16px; line-height: 22px; color: #a8a29e; }
+.nome-classe { font-family: Consolas, 'Courier New', monospace; font-size: 17px; font-weight: 700; color: #1d4e89; }
+.funcao { font-size: 14px; color: #44403c; margin-top: 2px; }
+.heranca { font-family: Consolas, 'Courier New', monospace; font-size: 12px; color: #d97706; margin-top: 4px; }
+
+/* ---------- trechos de código ---------- */
+.trechos { display: flex; flex-direction: column; gap: 16px; }
+.trecho .arquivo { font-size: 12px; color: #78716c; letter-spacing: .04em; margin-bottom: 6px; }
+.trecho pre { background: #1c1917; color: #f3efe7; border-radius: 10px; padding: 14px 18px; font-family: Consolas, 'Courier New', monospace; font-size: 15px; line-height: 1.5; overflow-x: auto; }
+.trecho .chave { color: #f2b46d; }
+.trecho .decorator { color: #9cc1ec; }
+
+/* ---------- conclusões ---------- */
+.colunas { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; }
+.colunas ul { list-style: none; }
+.colunas li { padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,.1); font-size: 16px; line-height: 1.5; color: #44403c; }
+.colunas li b { color: #1c1917; }
+.fonte { font-size: 13px; color: #a8a29e; margin-top: 26px; }
+
+/* ---------- navegação ---------- */
+.barra { position: fixed; left: 0; bottom: 0; height: 4px; background: #1d4e89; transition: width .4s; z-index: 60; }
+.contador { position: fixed; right: 24px; bottom: 16px; font-size: 12px; color: #a8a29e; z-index: 60; }
+.zona { position: fixed; top: 0; bottom: 0; width: 7%; z-index: 50; cursor: pointer; }
+.zona.dir { right: 0; }
+.zona.esq { left: 0; }
+.zona .seta { position: absolute; top: 50%; transform: translateY(-50%); font-size: 30px; color: #57534e; opacity: 0; transition: opacity .2s; }
+.zona.dir .seta { right: 24px; }
+.zona.esq .seta { left: 24px; }
+.zona:hover .seta { opacity: .6; }
+
+/* transição: o texto sobe e o conteúdo vem logo depois */
+.slide.entrando .texto { animation: subir .5s ease-out; }
+.slide.entrando .conteudo { animation: subir .5s .1s ease-out backwards; }
+@keyframes subir { from { transform: translateY(24px); opacity: 0; } }

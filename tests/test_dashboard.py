@@ -13,6 +13,16 @@ class TestSlide(unittest.TestCase):
         self.assertEqual(slide.titulo, "Evolução")
         self.assertEqual(slide.nota, "Subiu.")
 
+    def test_html_do_slide_tem_numero_titulo_e_destaque(self):
+        slide = Slide("Evolução", "<div>gráfico</div>", subtitulo="Série",
+                      destaque="4,98%")
+
+        html = slide.para_html(3)
+
+        self.assertIn("03 — SÉRIE", html)
+        self.assertIn("<h2>Evolução</h2>", html)
+        self.assertIn("4,98%", html)
+
     def test_slide_sem_titulo_gera_erro(self):
         with self.assertRaises(ValueError):
             Slide("   ", "<div></div>")
@@ -37,6 +47,11 @@ class TestDashboardHTML(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             slides.append(Slide("Intruso", ""))
+
+
+    def test_gerar_sem_slides_gera_erro(self):
+        with self.assertRaises(ValueError):
+            self.dashboard.gerar("saida/teste.html")
 
 
 class TestVisualizador(unittest.TestCase):

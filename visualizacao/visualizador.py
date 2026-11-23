@@ -15,6 +15,29 @@ TEMA_PADRAO = {
     "referencia": "#555555",
 }
 
+# Tema da apresentação (Etapa 6): fundo transparente para o gráfico
+# ficar por cima da cor da página, azul com laranja e grade bem clara.
+_GRADE = "rgba(0,0,0,0.06)"
+TEMA_EDITORIAL = {
+    "template": go.layout.Template(layout={
+        "font": {"family": "Inter, Arial, sans-serif", "size": 13,
+                 "color": "#57534e"},
+        "paper_bgcolor": "rgba(0,0,0,0)",
+        "plot_bgcolor": "rgba(0,0,0,0)",
+        "xaxis": {"gridcolor": _GRADE, "zeroline": False,
+                  "linecolor": "rgba(0,0,0,0.15)"},
+        "yaxis": {"gridcolor": _GRADE, "zeroline": False},
+        "hoverlabel": {"bgcolor": "#1c1917", "bordercolor": "#1c1917",
+                       "font": {"color": "#f3efe7"}},
+    }),
+    "cores": ["#1d4e89", "#d97706", "#6f9bd1", "#78716c", "#f2b46d"],
+    "destaque": "#d97706",
+    "referencia": "#a8a29e",
+    # Do mais claro ao mais escuro: usado no treemap, em que as
+    # categorias têm ordem (faixa baixa -> faixa crítica).
+    "sequencial": ["#e3ecf6", "#b4cbe6", "#6f9bd1", "#2f64a8", "#163a6b"],
+}
+
 
 class Visualizador:
     """Cria as figuras Plotly do projeto.
@@ -133,6 +156,10 @@ class Visualizador:
         """
         nomes = [str(n) for n in contagens.index]
         descricoes = descricoes or {}
+        # Se o tema tiver uma escala sequencial, ela é usada no lugar
+        # das cores comuns, porque as categorias aqui têm ordem.
+        escala = self.__tema.get("sequencial", self.__tema["cores"])
+        cores = [escala[i % len(escala)] for i in range(len(nomes))]
         figura = go.Figure(go.Treemap(
             labels=nomes, parents=[""] * len(nomes),
             values=contagens.values,
@@ -141,7 +168,7 @@ class Visualizador:
             hovertemplate=("<b>%{label}</b> %{customdata}<br>"
                            "%{value} meses (%{percentRoot:.1%})"
                            "<extra></extra>"),
-            marker={"colors": [self.__cor(i) for i in range(len(nomes))]},
+            marker={"colors": cores},
             sort=False,
         ))
         return self.__layout(figura, titulo)
