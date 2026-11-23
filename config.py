@@ -5,7 +5,7 @@ from pathlib import Path
 PASTA_PROJETO = Path(__file__).parent
 PASTA_DADOS_BRUTOS = PASTA_PROJETO / "dados" / "brutos"
 PASTA_GRAFICOS = PASTA_PROJETO / "saida" / "graficos"
-ARQUIVO_DASHBOARD = PASTA_PROJETO / "saida" / "dashboard.html"
+ARQUIVO_DASHBOARD = PASTA_PROJETO / "docs" / "dashboard.html"
 
 # Códigos das séries usadas em todo o projeto
 INADIMPLENCIA = 21082

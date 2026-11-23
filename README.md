@@ -5,6 +5,9 @@ do crédito no Brasil e sua relação com o custo do crédito** (2011–2026),
 desenvolvido em Python com Programação Orientada a Objetos e Pandas para o
 Projeto Final de POO (CDIA).
 
+**Documentação completa e dashboard:** https://dugrossi.github.io/ProjetoEconomia/
+(arquivos em `docs/`)
+
 ## Fonte de dados
 
 Banco Central do Brasil — Sistema Gerenciador de Séries Temporais (SGS),
@@ -31,6 +34,7 @@ ProjetoEconomia/
 ├── visualizacao/      Visualizador (gráficos Plotly)
 ├── saida/graficos/    gráficos gerados pelo main.py (não vão para o Git)
 ├── dashboard/         Slide e DashboardHTML (apresentação em slides)
+├── docs/              documentação (GitHub Pages) e dashboard.html gerado
 ├── dados/brutos/      CSVs baixados do Banco Central
 └── tests/             testes unitários (unittest)
 ```
@@ -162,8 +166,9 @@ pip install -r requirements.txt
 python main.py
 ```
 
-O `main.py` mostra as análises no terminal e grava os gráficos interativos
-(Plotly) em `saida/graficos/`, um arquivo HTML por gráfico.
+O `main.py` mostra as análises no terminal, grava os gráficos interativos
+(Plotly) em `saida/graficos/`, um arquivo HTML por gráfico, e gera o
+dashboard em `docs/dashboard.html`.
 
 ## Testes
 
