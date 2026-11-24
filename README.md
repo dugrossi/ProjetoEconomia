@@ -159,12 +159,26 @@ classDiagram
 
 ## Como executar
 
+### Clonar o repositório
+```bash
+git clone https://github.com/dugrossi/ProjetoEconomia.git
+cd projetoeconomia
+```
+
+### Instalar as bibliotecas necessárias e rodar a main
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate   |   Linux/Mac: source .venv/bin/activate
 pip install -r requirements.txt
 python main.py
 ```
+
+### Abrir o dash
+```bash
+cd docs
+start dashboard.html
+```
+
 
 O `main.py` mostra as análises no terminal, grava os gráficos interativos
 (Plotly) em `saida/graficos/`, um arquivo HTML por gráfico, e gera o
