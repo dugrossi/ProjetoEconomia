@@ -189,3 +189,6 @@ dashboard em `docs/dashboard.html`.
 ```bash
 python -m unittest discover -s tests -t .
 ```
+
+## GitHub Pages
+[GitHub Pages](https://dugrossi.github.io/ProjetoEconomia/)
